@@ -29,7 +29,10 @@ pip install --upgrade pip
 pip install Django>=5.0 mysqlclient pymysql django-environ gunicorn whitenoise
 
 # 3. INITIALIZE DATABASE & DATA
-echo "🗄️ Running Migrations..."
+echo "🗄️ Preparing Migrations..."
+python3 manage.py makemigrations
+
+echo "🚀 Running Migrations..."
 python3 manage.py migrate
 
 echo "🏍️ Loading Bike Fleet Data..."
