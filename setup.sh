@@ -16,7 +16,7 @@ fi
 source venv/bin/activate
 
 pip install --upgrade pip
-pip install Django>=5.0 mysqlclient django-environ gunicorn whitenoise
+pip install Django>=5.0 mysqlclient pymysql django-environ gunicorn whitenoise
 
 # 3. STATIC FILES SETUP
 echo "📦 Collecting Static Files..."
