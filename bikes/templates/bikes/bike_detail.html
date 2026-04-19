@@ -1,0 +1,223 @@
+{% extends 'bikes/base.html' %}
+
+{% block title %}Book {{ bike.name }} | Royal Enfield{% endblock %}
+
+{% block content %}
+<style>
+    .detail-container {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 5rem;
+        align-items: center;
+        min-height: 80vh;
+        padding: 5rem 0;
+    }
+
+    @media (max-width: 1100px) {
+        .detail-container {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+    }
+
+    .detail-left {
+        position: relative;
+    }
+
+    .detail-image-wrapper {
+        background: radial-gradient(circle at center, #1a1a1a 0%, transparent 70%);
+        padding: 4rem;
+        position: relative;
+    }
+
+    .detail-image {
+        width: 100%;
+        filter: drop-shadow(0 30px 60px rgba(0,0,0,0.8));
+        transition: transform 0.5s ease;
+    }
+
+    .detail-image:hover {
+        transform: scale(1.05) rotate(-2deg);
+    }
+
+    .detail-info h1 {
+        font-size: 5rem;
+        line-height: 0.9;
+        margin-bottom: 1rem;
+        font-weight: 900;
+        background: linear-gradient(to right, #fff, #888);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .detail-subtitle {
+        font-size: 1.5rem;
+        color: var(--primary);
+        letter-spacing: 5px;
+        margin-bottom: 2.5rem;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    .detail-meta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .meta-item {
+        border-left: 2px solid var(--primary);
+        padding-left: 1.5rem;
+    }
+
+    .meta-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 0.5rem;
+    }
+
+    .meta-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .detail-desc {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #d0d0d0;
+        margin-bottom: 4rem;
+    }
+
+    .booking-card {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(20px);
+        padding: 3rem;
+        border: 1px solid var(--glass-border);
+    }
+
+    .booking-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        letter-spacing: 2px;
+        font-weight: 800;
+        text-align: center;
+    }
+
+    /* Premium Form Styling */
+    .form-group {
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-muted);
+        margin-bottom: 0.8rem;
+        font-weight: 700;
+    }
+
+    .form-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.2rem 1.5rem;
+        color: #fff;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        border-radius: 0; /* Keeping it sharp/classic */
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 0 20px rgba(235, 0, 0, 0.1);
+    }
+
+    .form-input::placeholder {
+        color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Date Input Specifics */
+    input[type="date"] {
+        color-scheme: dark;
+    }
+</style>
+
+<div class="detail-container">
+    <div class="detail-left">
+        <div class="detail-image-wrapper">
+            {% if bike.image_url %}
+            <img src="{{ bike.image_url }}" alt="{{ bike.name }}" class="detail-image" id="bike-main-img">
+            {% else %}
+            <div style="height: 400px; background: #111;"></div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="detail-info">
+        <div class="detail-subtitle">{{ bike.category }} // {{ bike.model_level }}</div>
+        <h1>{{ bike.name }}</h1>
+        
+        <div class="detail-meta-grid">
+            <div class="meta-item">
+                <div class="meta-label">Engine Capacity</div>
+                <div class="meta-value">{{ bike.engine_capacity }} CC</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Ex-Showroom Price</div>
+                <div class="meta-value">₹{{ bike.price }}</div>
+            </div>
+        </div>
+
+        <p class="detail-desc">{{ bike.description }}</p>
+
+        <div class="booking-card">
+            <h3>RESERVE YOUR MACHINE</h3>
+            <form method="post">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-input" placeholder="Enter {{ field.label }}">
+                    {% if field.errors %}
+                    <div style="color: var(--primary); font-size: 0.85rem; margin-top: 0.5rem;">
+                        {{ field.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn" style="width: 100%; margin-top: 2rem;">Secure Booking</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Entrance Animation
+    gsap.from('.detail-info > *', {
+        opacity: 0,
+        x: 50,
+        stagger: 0.1,
+        duration: 1,
+        ease: 'power3.out'
+    });
+
+    gsap.from('.detail-image', {
+        opacity: 0,
+        scale: 0.8,
+        rotate: 5,
+        duration: 1.5,
+        ease: 'power4.out'
+    });
+</script>
+{% endblock %}

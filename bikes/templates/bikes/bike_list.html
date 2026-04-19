@@ -1,0 +1,352 @@
+{% extends 'bikes/base.html' %}
+
+{% block title %}Our Fleet | Royal Enfield{% endblock %}
+
+{% block navbar_filters %}
+    <div class="custom-filter">
+        <select id="cat-filter">
+            <option value="all">All Styles</option>
+            <option value="Heritage">Heritage</option>
+            <option value="Cruiser">Cruiser</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Roadster">Roadster</option>
+        </select>
+    </div>
+    <div class="custom-filter">
+        <select id="cc-filter">
+            <option value="all">All Engines</option>
+            <option value="350">350cc</option>
+            <option value="450">450cc</option>
+            <option value="650">650cc</option>
+        </select>
+    </div>
+    <div class="custom-filter">
+        <select id="sort-filter">
+            <option value="featured">Featured</option>
+            <option value="price-low">Price: Low-High</option>
+            <option value="price-high">Price: High-Low</option>
+        </select>
+    </div>
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Hero Section Specifics */
+    .hero-container {
+        position: relative;
+        height: 90vh;
+        margin-top: -80px;
+        background: url('/static/image/hero_polo.jpg') center/cover no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(5,5,5,1) 100%);
+    }
+
+    .hero-text-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        margin-bottom: 5vh;
+    }
+
+    .hero-title {
+        font-size: 7.5rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+        line-height: 0.8;
+        opacity: 0;
+        transform: translateY(50px);
+        color: #fff;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: var(--accent);
+        letter-spacing: 10px;
+        opacity: 0;
+        transform: translateY(30px);
+        margin-top: 2rem;
+    }
+
+    /* Bike Grid Styling */
+    .bike-grid-container {
+        padding: 6rem 0;
+    }
+
+    /* Bike Grid */
+    .bike-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 4rem;
+        padding-bottom: 8rem;
+    }
+
+    .bike-card {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    .bike-card-inner {
+        background: #0a0a0a;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .bike-card-inner:hover {
+        border-color: var(--primary);
+        background: #0f0f0f;
+    }
+
+    .bike-img-container {
+        height: 320px;
+        overflow: hidden;
+        position: relative;
+        background: radial-gradient(circle at center, #1a1a1a, #050505);
+    }
+
+    /* Card Top Redesign */
+    .card-badge {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.5rem;
+        background: var(--primary);
+        color: white;
+        padding: 0.4rem 1.2rem;
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 2px;
+        z-index: 10;
+        text-transform: uppercase;
+    }
+
+    .bike-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 1.5rem;
+        transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .bike-card-inner:hover .bike-img {
+        transform: rotate(-10deg) scale(1.15) translateY(-15px);
+    }
+
+    .bike-info {
+        padding: 2.5rem;
+        position: relative;
+    }
+
+    .bike-name {
+        font-size: 2.2rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        letter-spacing: -1px;
+    }
+
+    .bike-desc {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        height: 3rem;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    /* Card Bottom Redesign */
+    .bike-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        padding-top: 1.5rem;
+    }
+
+    .price-tag {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .price-val {
+        font-size: 1.5rem;
+        font-weight: 300;
+        color: #fff;
+    }
+
+    .cc-val {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .explore-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: gap 0.3s ease;
+    }
+
+    .explore-link:hover {
+        gap: 1rem;
+    }
+
+    /* Feature Card Section */
+    .feature-section {
+        margin: 10rem 0;
+        position: relative;
+    }
+
+    .feature-card {
+        height: 70vh;
+        background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, transparent 60%), url('/static/image/adventure_himalayan.jpg') center/cover no-repeat;
+        display: flex;
+        align-items: center;
+        padding: 5%;
+        border: 1px solid var(--glass-border);
+    }
+
+    .feature-content {
+        max-width: 550px;
+    }
+
+    .feature-content h2 {
+        font-size: 5rem;
+        line-height: 0.9;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="hero-container">
+    <div class="hero-overlay"></div>
+    <div class="hero-text-content">
+        <h1 class="hero-title">MADE<br><span>FOR THE WORLD</span></h1>
+        <p class="hero-subtitle">BORN IN THE HIMALAYAS</p>
+    </div>
+</div>
+
+<div class="bike-grid-container">
+
+<div class="bike-grid" id="bike-grid">
+    {% for bike in bikes %}
+    <div class="bike-card" data-cat="{{ bike.category }}" data-cc="{{ bike.engine_capacity }}" data-price="{{ bike.price }}">
+        <div class="bike-card-inner">
+            <div class="card-badge">{{ bike.category }}</div>
+            <div class="bike-img-container">
+                {% if bike.image_url %}
+                <img src="{{ bike.image_url }}" alt="{{ bike.name }}" class="bike-img">
+                {% else %}
+                <div class="bike-img" style="background:#111;"></div>
+                {% endif %}
+            </div>
+            <div class="bike-info">
+                <h2 class="bike-name">{{ bike.name }}</h2>
+                <p class="bike-desc">{{ bike.description|truncatewords:12 }}</p>
+                <div class="bike-footer">
+                    <div class="price-tag">
+                        <span class="price-val">₹{{ bike.price|floatformat:0 }}</span>
+                        <span class="cc-val">{{ bike.engine_capacity }} CC</span>
+                    </div>
+                    <a href="{% url 'bike_detail' bike.pk %}" class="explore-link">Explore Model ➔</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="feature-section">
+    <div class="feature-card">
+        <div class="feature-content">
+            <h3 style="color: var(--primary); letter-spacing: 5px; margin-bottom: 1.5rem; font-weight: 800;">ADVENTURE AWAITS</h3>
+            <h2>ALL ROADS.<br>NO ROADS.</h2>
+            <p style="color: var(--text-muted); margin-bottom: 3rem; font-size: 1.2rem; line-height: 1.8;">The new Himalayan 450 is built for a life on the move. From the high mountain passes to the city streets, it's the only companion you need.</p>
+            <a href="#" class="btn">Experience Adventure</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // GSAP Animations
+    gsap.registerPlugin(ScrollTrigger);
+
+    window.onload = () => {
+        // Hero Intro
+        gsap.to('.hero-title', { opacity: 1, y: 0, duration: 1.5, ease: 'power4.out', delay: 0.3 });
+        gsap.to('.hero-subtitle', { opacity: 1, y: 0, duration: 1.5, ease: 'power4.out', delay: 0.6 });
+
+        // Bike Cards Entrance
+        gsap.to('.bike-card', {
+            opacity: 1,
+            y: 0,
+            stagger: 0.1,
+            duration: 1,
+            ease: 'expo.out',
+            scrollTrigger: {
+                trigger: '.bike-grid',
+                start: 'top 85%'
+            }
+        });
+
+        // Feature Card Parallax
+        gsap.from('.feature-card', {
+            backgroundPosition: '50% 100%',
+            scrollTrigger: {
+                trigger: '.feature-section',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1
+            }
+        });
+    };
+
+    // Advanced Filtering Logic
+    const grid = document.getElementById('bike-grid');
+    const cards = Array.from(document.getElementsByClassName('bike-card'));
+    const catFilter = document.getElementById('cat-filter');
+    const ccFilter = document.getElementById('cc-filter');
+    const sortFilter = document.getElementById('sort-filter');
+
+    function filterAndSort() {
+        const cat = catFilter.value;
+        const cc = ccFilter.value;
+        const sort = sortFilter.value;
+
+        let filtered = cards.filter(card => {
+            const cardCat = card.dataset.cat;
+            const cardCC = parseInt(card.dataset.cc);
+            
+            const catMatch = cat === 'all' || cardCat === cat;
+            const ccMatch = cc === 'all' || (cc === '350' && cardCC < 400) || (cc === '450' && cardCC >= 400 && cardCC < 600) || (cc === '650' && cardCC >= 600);
+            
+            return catMatch && ccMatch;
+        });
+
+        cards.forEach(c => c.style.display = 'none');
+        
+        if (sort === 'price-low') filtered.sort((a,b) => parseFloat(a.dataset.price) - parseFloat(b.dataset.price));
+        if (sort === 'price-high') filtered.sort((a,b) => parseFloat(b.dataset.price) - parseFloat(a.dataset.price));
+
+        filtered.forEach(c => c.style.display = 'block');
+        gsap.fromTo(filtered, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, stagger: 0.05, duration: 0.5, ease: 'power2.out' });
+    }
+
+    catFilter.onchange = filterAndSort;
+    ccFilter.onchange = filterAndSort;
+    sortFilter.onchange = filterAndSort;
+</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'bikes/base.html' %}
+
+{% block title %}Booking Success | Royal Enfield{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 4rem auto; text-align: center; background: var(--bg-card); padding: 4rem 2rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+    
+    <!-- Success Checkmark SVG -->
+    <svg style="width: 80px; height: 80px; color: #4CAF50; margin-bottom: 2rem;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+
+    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Booking Confirmed</h1>
+    <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2.5rem;">
+        Your Royal Enfield booking has been successfully recorded. Our team will contact you shortly to finalize the details of your adventure.
+    </p>
+    
+    <a href="{% url 'bike_list' %}" class="btn">Explore More Bikes</a>
+</div>
+{% endblock %}
