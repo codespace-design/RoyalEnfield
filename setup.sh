@@ -43,7 +43,7 @@ server {
 }
 EOF
 
-sudo ln -s /etc/nginx/sites-available/royalenfield /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/royalenfield /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo systemctl restart nginx
 
